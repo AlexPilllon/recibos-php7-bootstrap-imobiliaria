@@ -1,0 +1,38 @@
+	.texto {
+	font-family: Tahoma;
+	font-size: 10px;
+	color: #000000;
+	font-weight: bold;}
+	.texto8 {
+	font-family: Tahoma;
+	font-size: 13px;
+	color: #000000;
+	font-weight: bold;}
+	.texto9 {
+	font-family: Tahoma;
+	font-size: 25px;
+	color: #000000;
+	font-weight: bold;}
+	.recibo {
+	font-family: Tahoma;
+	font-size: 18px;
+	color: #000000;}
+	.recibod {
+	font-family: Tahoma;
+	font-size: 18px;
+	color: #000000;
+	text-transform: capitalize;}
+	.recibo1 {
+	font-family: verdana;
+	font-size: 39px;
+	color: #000000;
+	font-weight: bold;}
+	.recibo2 {
+	font-family: Tahoma;
+	font-size: 18px;
+	color: #000000;
+	font-weight: bold;}
+
+.form {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #003300;
+ background-color: #F9F9F9; border: 1px #999999 solid}
+

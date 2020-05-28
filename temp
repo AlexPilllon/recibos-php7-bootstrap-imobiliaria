@@ -1,0 +1,217 @@
+<?php
+
+//RECEBE OS DADOS DA PAGINA DE CONFIGURAÇÃO
+include "personaliza.php";
+if(!$_POST['submit']){
+    print "todos os campos são obrigatórios";
+}
+
+//TRANSFORMANDO DATA DE VENCIMENTO
+$mesn = $_POST['mesv']; // ve o mês setado na var mesv
+
+switch($mesn) // transforma o mes
+{
+    case "1":
+        $mesc = "Janeiro";
+        break;
+    case "2":
+        $mesc = "Fevereiro";
+        break;
+    case "3":
+        $mesc = "Março";
+        break;
+    case "4":
+        $mesc = "Abril";
+        break;
+    case "5":
+        $mesc = "Maio";
+        break;
+    case "6":
+        $mesc = "Junho";
+        break;
+    case "7":
+        $mesc = "Julho";
+        break;
+    case "8":
+        $mesc = "Agosto";
+        break;
+    case "9":
+        $mesc = "Setembro";
+        break;
+    case "10":
+        $mesc = "Outubro";
+        break;
+    case "11":
+        $mesc = "Novembro";
+        break;
+    case "12":
+        $mesc = "Dezembro";
+        break;
+}
+
+//TRANSFORMANDO O VALOR DA PROMISSORIA PARA EXTENSO
+function extenso($valor = 0, $maiusculas = false) {
+
+    $singular = array("centavo", "real", "mil", "milhão", "bilhão", "trilhão", "quatrilhão");
+    $plural = array("centavos", "reais", "mil", "milhões", "bilhões", "trilhões", "quatrilhões");
+
+    $c = array("", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos");
+    $d = array("", "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa");
+    $d10 = array("dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove");
+    $u = array("", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove");
+
+    $z = 0;
+    $rt = "";
+
+    $valor = number_format($valor, 2, ".", ".");
+    $inteiro = explode(".", $valor);
+    for($i=0;$i<count($inteiro);$i++)
+        for($ii=strlen($inteiro[$i]);$ii<3;$ii++)
+            $inteiro[$i] = "0".$inteiro[$i];
+
+    $fim = count($inteiro) - ($inteiro[count($inteiro)-1] > 0 ? 1 : 2);
+    for ($i=0;$i<count($inteiro);$i++) {
+        $valor = $inteiro[$i];
+        $rc = (($valor > 100) && ($valor < 200)) ? "cento" : $c[$valor[0]];
+        $rd = ($valor[1] < 2) ? "" : $d[$valor[1]];
+        $ru = ($valor > 0) ? (($valor[1] == 1) ? $d10[$valor[2]] : $u[$valor[2]]) : "";
+
+        $r = $rc.(($rc && ($rd || $ru)) ? " e " : "").$rd.(($rd &&
+                $ru) ? " e " : "").$ru;
+        $t = count($inteiro)-1-$i;
+        $r .= $r ? " ".($valor > 1 ? $plural[$t] : $singular[$t]) : "";
+        if ($valor == "000")$z++; elseif ($z > 0) $z--;
+        if (($t==1) && ($z>0) && ($inteiro[0] > 0)) $r .= (($z>1) ? " de " : "").$plural[$t];
+        if ($r) $rt = $rt . ((($i > 0) && ($i <= $fim) &&
+                ($inteiro[0] > 0) && ($z < 1)) ? ( ($i < $fim) ? ", " : " e ") : " ") . $r;
+    }
+
+    if(!$maiusculas){
+        return($rt ? $rt : "zero");
+    } else {
+
+        if ($rt) $rt=ereg_replace(" E "," e ",ucwords($rt));
+        return (($rt) ? ($rt) : "Zero");
+    }
+
+}
+
+$valor = $_POST['valorp'];
+$dim = extenso($valor);
+$atrocar = "E";
+$trocarpor = "e";
+str_replace ($atrocar, $trocarpor, $dim);
+
+$valor = number_format($valor, 2, ",", ".");
+
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<title>Recibo Sr(a). <?php $_POST['ndestinatario']; ?></title>
+    <style type="text/css">
+        <!--
+        @import url("css/estilos.css");
+        .style1 {font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .style2 {font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; font-size: 11px; }
+        -->
+    </style>
+</head>
+<body onload='window.print()'>
+
+//TRATAMENTO DE DADOS DO FORMULÁRIO
+<table width="648" height="390" border="1">
+    <tr>
+        <td width="641" valign="top"><table width="364" border="0" cellspacing="1">
+                <tr>
+                    <td width="10" class="texto9">&nbsp;</td>
+                    <td width="344" class="texto9"><?php echo $emitente;?></td>
+                </tr>
+
+                <table width="636" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="211">&nbsp;</td>
+                        <td width="244" class="recibo1">Recibo</td>
+                        <td width="181" class="texto9">R$
+                            <?= $valor;?>
+                        </td>
+                    </tr>
+                </table>
+                <table width="639" border="0">
+                    <tr>
+                        <td width="10">&nbsp;</td>
+                        <td width="613"><table width="615" border="0" cellspacing="3">
+                                <tr>
+                                    <td width="114" class="recibo2">Recebi (emos) de: </td>
+                                    <td width="491" class="recibo"><?= $_POST['ndestinatario'];?>&nbsp;</td>
+                                </tr>
+                            </table>
+                            <table width="616" border="0" cellspacing="3">
+                                <tr>
+                                    <td width="71" class="recibo2">O valor de: </td>
+                                    <td width="535" class="recibo"><?= $dim;?>
+                                        &nbsp;</td>
+                                </tr>
+                            </table>
+                            <table width="616" border="0" cellspacing="3">
+                                <tr>
+                                    <td width="85" class="recibo2">Referente a: </td>
+                                    <td width="521" class="recibo"><?= $_POST['referente'];?>
+                                        &nbsp;</td>
+                                </tr>
+                            </table>
+                            <table width="616" border="0" cellspacing="3">
+                                <tr>
+                                    <td width="160" class="recibo2">Firmo (amos) o presente: </td>
+                                    <td width="81" class="style1"><?php echo $cidade;?>&nbsp;,</td>
+                                    <td width="361" class="recibo"><span class="style1">
+                    <?= $_POST['diav'];?>
+                    de </span> <span class="style1">
+                      <?= $mesc;?>
+                      </span> <span class="style1">de</span> <span class="style1">
+                        <?= $_POST['anov'];?>
+                      </span></td>
+                                </tr>
+                            </table></td>
+                    </tr>
+                </table>
+                <table width="638" border="0">
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+                <table width="638" border="0">
+                    <tr>
+                        <td width="292">&nbsp;</td>
+                        <td width="336">_______________________________________</td>
+                    </tr>
+                </table>
+                <table width="638" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="377">&nbsp;</td>
+                        <td width="251"><span class="recibo">
+            <?= $_POST['nemitente'];?>
+          </span></td>
+                    </tr>
+                </table>
+                <table width="638" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="415">&nbsp;</td>
+                        <td width="213"><span class="recibo">
+            <?= $_POST['cemitente'];?>
+          </span></td>
+                    </tr>
+                </table>
+                </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
